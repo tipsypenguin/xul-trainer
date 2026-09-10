@@ -1,1107 +1,1262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xul Dungeon Trainer — Fellowship</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #0d0d12;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  h1 {
-    margin: 12px 0 4px;
-    font-size: 1.4rem;
-    color: #c9a0ff;
-    letter-spacing: 1px;
-  }
-  .subtitle { font-size: 0.8rem; color: #888; margin-bottom: 8px; }
-  #gameWrapper {
-    position: relative;
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 8px;
-  }
-  canvas {
-    background: #1a1a24;
-    border: 2px solid #3a3a55;
-    border-radius: 6px;
-    cursor: crosshair;
-    display: block;
-  }
-  #sidebar {
-    width: 260px;
-    background: #16161f;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    font-size: 0.85rem;
-  }
-  .hud-block {
-    background: #1e1e2a;
-    border-radius: 6px;
-    padding: 8px 10px;
-  }
-  .hud-block h3 {
-    font-size: 0.75rem;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-  }
-  .hud-value { font-size: 1.1rem; font-weight: 600; }
-  .green { color: #4ade80; }
-  .red { color: #f87171; }
-  .yellow { color: #fbbf24; }
-  .purple { color: #c084fc; }
-  .cyan { color: #22d3ee; }
-  label { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; }
-  input[type=range] { width: 100%; accent-color: #a78bfa; }
-  .slider-val { color: #a78bfa; font-weight: 600; }
-  button {
-    background: #7c3aed;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 16px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.15s;
-  }
-  button:hover { background: #6d28d9; }
-  button:disabled { background: #444; cursor: not-allowed; }
-  #deathOverlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.82);
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    z-index: 10;
-  }
-  #deathOverlay h2 { color: #f87171; font-size: 1.8rem; margin-bottom: 8px; }
-  #deathReason { color: #ccc; margin-bottom: 20px; text-align: center; max-width: 320px; }
-  .legend {
-    font-size: 0.72rem;
-    color: #777;
-    line-height: 1.45;
-  }
-  .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xul Dungeon Trainer — Fellowship</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0d0d12;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            margin: 12px 0 4px;
+            font-size: 1.4rem;
+            color: #c9a0ff;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        #gameWrapper {
+            position: relative;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        canvas {
+            background: #1a1a24;
+            border: 2px solid #3a3a55;
+            border-radius: 6px;
+            cursor: crosshair;
+            display: block;
+        }
+
+        #sidebar {
+            width: 260px;
+            background: #16161f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+
+        .hud-block {
+            background: #1e1e2a;
+            border-radius: 6px;
+            padding: 8px 10px;
+        }
+
+        .hud-block h3 {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .hud-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .green {
+            color: #4ade80;
+        }
+
+        .red {
+            color: #f87171;
+        }
+
+        .yellow {
+            color: #fbbf24;
+        }
+
+        .purple {
+            color: #c084fc;
+        }
+
+        .cyan {
+            color: #22d3ee;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.8rem;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: #a78bfa;
+        }
+
+        .slider-val {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        button {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+
+        button:hover {
+            background: #6d28d9;
+        }
+
+        button:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+
+        #deathOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.82);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            z-index: 10;
+        }
+
+        #deathOverlay h2 {
+            color: #f87171;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        #deathReason {
+            color: #ccc;
+            margin-bottom: 20px;
+            text-align: center;
+            max-width: 320px;
+        }
+
+        .legend {
+            font-size: 0.72rem;
+            color: #777;
+            line-height: 1.45;
+        }
+
+        .legend span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
-  <h1>Xul Dungeon Trainer</h1>
-  <div class="subtitle">Fellowship — Tank practice · Top-down view</div>
+<h1>Xul Dungeon Trainer</h1>
+<div class="subtitle">Fellowship — Tank practice · Top-down view</div>
 
-  <div id="gameWrapper">
+<div id="gameWrapper">
     <div style="position:relative">
-      <canvas id="game" width="800" height="800"></canvas>
-      <div id="deathOverlay">
-        <h2>💀 Death / Wipe</h2>
-        <div id="deathReason"></div>
-        <button id="restartBtn">Restart</button>
-      </div>
+        <canvas id="game" width="800" height="800"></canvas>
+        <div id="deathOverlay">
+            <h2>💀 Death / Wipe</h2>
+            <div id="deathReason"></div>
+            <button id="restartBtn">Restart</button>
+        </div>
     </div>
 
     <div id="sidebar">
-      <div class="hud-block">
-        <h3>Fight time</h3>
-        <div class="hud-value cyan" id="hudTime">0.0 s</div>
-      </div>
-      <div class="hud-block">
-        <h3>True Sight</h3>
-        <div class="hud-value" id="hudTS">none</div>
-      </div>
-      <div class="hud-block">
-        <h3>Tired Eyes</h3>
-        <div class="hud-value yellow" id="hudTired">0</div>
-      </div>
-      <div class="hud-block">
-        <h3>Boss HP</h3>
-        <div class="hud-value red" id="hudHP">100%</div>
-      </div>
-      <div class="hud-block">
-        <h3>Tormented Visions</h3>
-        <div class="hud-value purple" id="hudTV">—</div>
-      </div>
-      <div class="hud-block">
-        <h3>Wave / Eradication</h3>
-        <div class="hud-value" id="hudWave">—</div>
-      </div>
-      <div class="hud-block">
-        <h3>Portal CD</h3>
-        <div class="hud-value cyan" id="hudPortal">ready</div>
-      </div>
-      <div class="hud-block">
-        <h3>Waves cleared</h3>
-        <div class="hud-value yellow" id="hudWaves">0</div>
-      </div>
+        <div class="hud-block">
+            <h3>Fight time</h3>
+            <div class="hud-value cyan" id="hudTime">0.0 s</div>
+        </div>
+        <div class="hud-block">
+            <h3>True Sight</h3>
+            <div class="hud-value" id="hudTS">none</div>
+        </div>
+        <div class="hud-block">
+            <h3>Tired Eyes</h3>
+            <div class="hud-value yellow" id="hudTired">0</div>
+        </div>
+        <div class="hud-block">
+            <h3>Boss HP</h3>
+            <div class="hud-value red" id="hudHP">100%</div>
+        </div>
+        <div class="hud-block">
+            <h3>Tormented Visions</h3>
+            <div class="hud-value purple" id="hudTV">—</div>
+        </div>
+        <div class="hud-block">
+            <h3>Wave / Eradication</h3>
+            <div class="hud-value" id="hudWave">—</div>
+        </div>
+        <div class="hud-block">
+            <h3>Portal CD</h3>
+            <div class="hud-value cyan" id="hudPortal">ready</div>
+        </div>
+        <div class="hud-block">
+            <h3>Waves cleared</h3>
+            <div class="hud-value yellow" id="hudWaves">0</div>
+        </div>
 
-      <label>
-        Tank speed: <span class="slider-val" id="valTankSpeed">5</span>
-        <input type="range" id="tankSpeed" min="1" max="10" step="0.5" value="5">
-      </label>
-      <label>
-        Boss speed: <span class="slider-val" id="valBossSpeed">6</span>
-        <input type="range" id="bossSpeed" min="1" max="12" step="0.5" value="6">
-      </label>
-      <label>
-        Orb speed: <span class="slider-val" id="valOrbSpeed">1</span>
-        <input type="range" id="orbSpeed" min="1" max="10" step="0.5" value="1">
-      </label>
-      <label>
-        Game speed: <span class="slider-val" id="valGameSpeed">1.0x</span>
-        <input type="range" id="gameSpeed" min="0.5" max="3" step="0.1" value="1">
-      </label>
+        <label>
+            Tank speed: <span class="slider-val" id="valTankSpeed">5</span>
+            <input type="range" id="tankSpeed" min="1" max="10" step="0.5" value="5">
+        </label>
+        <label>
+            Boss speed: <span class="slider-val" id="valBossSpeed">6</span>
+            <input type="range" id="bossSpeed" min="1" max="12" step="0.5" value="6">
+        </label>
+        <label>
+            Orb speed: <span class="slider-val" id="valOrbSpeed">1</span>
+            <input type="range" id="orbSpeed" min="1" max="10" step="0.5" value="1">
+        </label>
+        <label>
+            Game speed: <span class="slider-val" id="valGameSpeed">1.0x</span>
+            <input type="range" id="gameSpeed" min="0.5" max="3" step="0.1" value="1">
+        </label>
 
-      <button id="startBtn">Start</button>
+        <button id="startBtn">Start</button>
 
-      <div class="legend">
-        <div><span style="background:#4ade80"></span> Safe lane (visible with TS)</div>
-        <div><span style="background:#f87171"></span> Danger zone</div>
-        <div><span style="background:#c084fc"></span> Altar</div>
-        <div><span style="background:#fbbf24"></span> Orb (boss only)</div>
-        <div><span style="background:#22d3ee"></span> Portal (20 s CD)</div>
-        <div style="margin-top:6px">WASD / arrows — move<br>Click altar — True Sight<br>Click portal — teleport</div>
-      </div>
+        <div class="legend">
+            <div><span style="background:#4ade80"></span> Safe lane (visible with TS)</div>
+            <div><span style="background:#f87171"></span> Danger zone</div>
+            <div><span style="background:#c084fc"></span> Altar</div>
+            <div><span style="background:#fbbf24"></span> Orb (boss only)</div>
+            <div><span style="background:#22d3ee"></span> Portal (20 s CD)</div>
+            <div style="margin-top:6px">WASD / arrows — move<br>Click altar — True Sight<br>Click portal — teleport
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 
 <script>
-/* ================================================================
-   Xul Dungeon Trainer — Fellowship
-   Fixes applied per feedback
-   ================================================================ */
+    /* ================================================================
+       Xul Dungeon Trainer — Fellowship
+       Fixes applied per feedback
+       ================================================================ */
 
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-const W = 800, H = 800;
-const ALTAR_SIZE = 36;
-const PLAYER_R = 18;
-const BOSS_R = 28;
-const ORB_R = 12;
-const NPC_R = 16;
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const W = 800, H = 800;
+    const ALTAR_SIZE = 36;
+    const PLAYER_R = 18;
+    const BOSS_R = 28;
+    const ORB_R = 12;
+    const NPC_R = 16;
 
-/* ── Character icons (place next to this HTML for GitHub Pages) ──
-   Expected files (relative paths):
-     tank.webp   — player tank
-     boss.webp   — boss
-     ally1.webp  — party member 1
-     ally2.webp  — party member 2
-     ally3.webp  — party member 3
-   Missing files fall back to colored circles.
-*/
-function loadIcon(src) {
-  const img = new Image();
-  img.ready = false;
-  img.onload = () => { img.ready = true; };
-  img.onerror = () => { img.ready = false; };
-  img.src = src;
-  return img;
-}
-const icons = {
-  tank:  loadIcon('tank.webp'),
-  boss:  loadIcon('boss.webp'),
-  ally1: loadIcon('ally1.webp'),
-  ally2: loadIcon('ally2.webp'),
-  ally3: loadIcon('ally3.webp')
-};
-
-function drawIcon(img, x, y, radius, fallbackColor) {
-  const size = radius * 2;
-  if (img && img.ready) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(img, x - radius, y - radius, size, size);
-    ctx.restore();
-    // subtle ring
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.stroke();
-  } else {
-    ctx.fillStyle = fallbackColor;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-// ─── State ─────────────────────────────────────────────────────
-let running = false;
-let gameTime = 0;
-let lastFrame = 0;
-let gameSpeedMult = 1;
-let tankSpeedVal = 5;
-let bossSpeedVal = 6;
-let orbSpeedVal = 1;
-
-const player = {
-  x: W / 2, y: H / 2,
-  dead: false, deathReason: ''
-};
-
-const keys = {};
-window.addEventListener('keydown', e => {
-  keys[e.code] = true;
-  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','Space'].includes(e.code))
-    e.preventDefault();
-});
-window.addEventListener('keyup', e => { keys[e.code] = false; });
-
-const altars = [
-  { x: 40,  y: 40,  name: 'TL' },
-  { x: W-40, y: 40,  name: 'TR' },
-  { x: 40,  y: H-40, name: 'BL' },
-  { x: W-40, y: H-40, name: 'BR' }
-];
-let lastAltar = altars[0];
-
-// True Sight — durations tracked via absolute gameTime so they stay
-// perfectly in sync with waves/orbs/erad at any game-speed multiplier
-let trueSightEndsAt = 0;       // gameTime when TS expires (0 = inactive)
-let tiredEyesStacks = 0;
-let tiredEyesEndsAt = 0;       // gameTime when residual Tired Eyes ends
-let tsNextStackAt = 0;         // gameTime when next Tired Eyes stack applies
-// Remember safe lanes seen while TS was active (for current wave)
-let rememberedSafe = new Set(); // statue indices that were seen as safe
-
-const boss = {
-  x: 60, y: 60,
-  hp: 100,
-  casting: false,
-  castEndsAt: 0,    // gameTime when current TV cast finishes
-  nextCastAt: 25,   // gameTime when next TV may start
-  color: '#e11d48'
-};
-
-// Waves: delay 5 + move 5 + pause 5 = 15s between wave starts
-// Thick strips so tank cannot slip between consecutive waves
-let waveState = 'waiting'; // waiting | delay | moving | pause
-let waveTimer = 5;
-let waveSide = 0;
-let wavePattern = [];
-let waveProgress = 0;
-let statues = [];
-let stripThickness = 110;
-
-// Orbs — first at +15s, every 26s; decay over lifetime
-let orbs = [];
-let nextOrbAt = 15;
-const ORB_LIFETIME = 26;
-
-// Eradication: telegraph (preview beams follow targets) → instant resolve
-let eradState = 'waiting'; // waiting | telegraph | resolve
-let eradTimer = 25;
-let eradStatues = [];
-let eradBeams = []; // live preview lines that track targets
-let eradCastProgress = 0;
-const ERAD_TELEGRAPH = 5; // seconds of preview before snap
-
-const npcs = [
-  { x: W * 0.3, y: H * 0.3, alive: true },
-  { x: W * 0.7, y: H * 0.3, alive: true },
-  { x: W * 0.5, y: H * 0.7, alive: true }
-];
-
-// Portals closer to center-diagonal
-const portal = {
-  a: { x: 220, y: H - 220 },
-  b: { x: W - 220, y: 220 }
-};
-let portalReadyAt = 0; // gameTime when portal becomes ready again
-
-const DAMAGE_PER_WAVE = 25 / 16;
-let wavesCompleted = 0;
-
-// Safe statue indices (0-based). Pattern 5 = statues 3,4,5 (center)
-const PATTERNS = [
-  [0, 1],        // 1, 2
-  [5, 6],        // 6, 7
-  [0, 2, 4, 6],  // 1, 3, 5, 7
-  [1, 3, 5],     // 2, 4, 6
-  [2, 3, 4]      // 3, 4, 5 (center)
-];
-
-function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
-function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-function pointInRect(px, py, rx, ry, rw, rh) {
-  return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
-}
-function distToSegment(px, py, x1, y1, x2, y2) {
-  const dx = x2 - x1, dy = y2 - y1;
-  const len2 = dx*dx + dy*dy;
-  if (len2 === 0) return Math.hypot(px-x1, py-y1);
-  let t = ((px-x1)*dx + (py-y1)*dy) / len2;
-  t = clamp(t, 0, 1);
-  return Math.hypot(px - (x1 + t*dx), py - (y1 + t*dy));
-}
-
-// ─── Reset ─────────────────────────────────────────────────────
-function resetGame() {
-  running = true;
-  gameTime = 0;
-  lastFrame = performance.now();
-  player.x = W / 2; player.y = H / 2;
-  player.dead = false; player.deathReason = '';
-
-  trueSightEndsAt = 0; tiredEyesStacks = 0; tiredEyesEndsAt = 0; tsNextStackAt = 0;
-  rememberedSafe = new Set();
-
-  boss.x = 60; boss.y = 60; boss.hp = 100;
-  boss.casting = false; boss.castEndsAt = 0; boss.nextCastAt = 25;
-
-  waveState = 'waiting'; waveTimer = 5; statues = []; waveProgress = 0;
-
-  orbs = []; nextOrbAt = 15; lastAltar = altars[0];
-
-  eradState = 'waiting'; eradTimer = 25; eradStatues = []; eradBeams = [];
-
-  portalReadyAt = 0;
-  wavesCompleted = 0;
-
-  npcs[0].x = W*0.3; npcs[0].y = H*0.3; npcs[0].alive = true;
-  npcs[1].x = W*0.7; npcs[1].y = H*0.3; npcs[1].alive = true;
-  npcs[2].x = W*0.5; npcs[2].y = H*0.7; npcs[2].alive = true;
-
-  document.getElementById('deathOverlay').style.display = 'none';
-  document.getElementById('startBtn').disabled = true;
-}
-
-// ─── Wave system (no gap between waves) ────────────────────────
-function spawnWave() {
-  waveSide = Math.floor(Math.random() * 4);
-  const pat = PATTERNS[Math.floor(Math.random() * PATTERNS.length)];
-  wavePattern = pat;
-  statues = [];
-  rememberedSafe = new Set(); // new wave — clear memory of previous lanes
-  const margin = 40;
-  const usable = (waveSide % 2 === 0 ? W : H) - margin * 2;
-  const step = usable / 6;
-
-  for (let i = 0; i < 7; i++) {
-    let sx, sy;
-    if (waveSide === 0)      { sx = margin + i * step; sy = 28; }
-    else if (waveSide === 1) { sx = W - 28; sy = margin + i * step; }
-    else if (waveSide === 2) { sx = margin + i * step; sy = H - 28; }
-    else                     { sx = 28; sy = margin + i * step; }
-    statues.push({ x: sx, y: sy, safe: pat.includes(i), idx: i });
-  }
-  // If TS is active at spawn, immediately remember safe lanes
-  if (hasTrueSight()) {
-    for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
-  }
-  waveState = 'delay';
-  waveTimer = 5;
-  waveProgress = 0;
-}
-
-function updateWave(dt) {
-  if (waveState === 'waiting') {
-    waveTimer -= dt;
-    if (waveTimer <= 0) spawnWave();
-  } else if (waveState === 'delay') {
-    waveTimer -= dt;
-    if (hasTrueSight()) {
-      for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
+    /* ── Character icons (place next to this HTML for GitHub Pages) ──
+       Expected files (relative paths):
+         tank.webp   — player tank
+         boss.webp   — boss
+         ally1.webp  — party member 1
+         ally2.webp  — party member 2
+         ally3.webp  — party member 3
+       Missing files fall back to colored circles.
+    */
+    function loadIcon(src) {
+        const img = new Image();
+        img.ready = false;
+        img.onload = () => {
+            img.ready = true;
+        };
+        img.onerror = () => {
+            img.ready = false;
+        };
+        img.src = src;
+        return img;
     }
-    if (waveTimer <= 0) {
-      waveState = 'moving';
-      waveTimer = 5;
-      waveProgress = 0;
-    }
-  } else if (waveState === 'moving') {
-    waveTimer -= dt;
-    waveProgress = 1 - Math.max(0, waveTimer) / 5;
-    if (hasTrueSight()) {
-      for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
-    }
-    checkWaveCollision();
-    if (waveTimer <= 0) {
-      // pause 5s → total cycle delay5+move5+pause5 = 15s between wave starts
-      wavesCompleted++;
-      boss.hp = Math.max(0, boss.hp - DAMAGE_PER_WAVE);
-      waveState = 'pause';
-      waveTimer = 5;
-    }
-  } else if (waveState === 'pause') {
-    waveTimer -= dt;
-    if (waveTimer <= 0) spawnWave();
-  }
-}
 
-function getWaveStripRect(statue, progress) {
-  // Thick moving front so consecutive waves overlap / leave no safe gap
-  const thickness = stripThickness;
-  const len = (waveSide % 2 === 0 ? H : W);
-  const offset = progress * len;
+    const icons = {
+        tank: loadIcon('tank.webp'),
+        boss: loadIcon('boss.webp'),
+        ally1: loadIcon('ally1.webp'),
+        ally2: loadIcon('ally2.webp'),
+        ally3: loadIcon('ally3.webp')
+    };
 
-  if (waveSide === 0) { // top → down
-    return { x: statue.x - thickness/2, y: offset - thickness/2, w: thickness, h: thickness };
-  } else if (waveSide === 1) { // right → left
-    return { x: W - offset - thickness/2, y: statue.y - thickness/2, w: thickness, h: thickness };
-  } else if (waveSide === 2) { // bottom → up
-    return { x: statue.x - thickness/2, y: H - offset - thickness/2, w: thickness, h: thickness };
-  } else { // left → right
-    return { x: offset - thickness/2, y: statue.y - thickness/2, w: thickness, h: thickness };
-  }
-}
-
-function isLaneSafeForPlayer(statue) {
-  // Passages always exist mechanically.
-  // Player survives if the lane is actually safe (regardless of TS).
-  // Visuals: only shown when TS active or remembered from earlier TS.
-  return statue.safe;
-}
-
-function checkWaveCollision() {
-  if (player.dead) return;
-  for (const s of statues) {
-    const r = getWaveStripRect(s, waveProgress);
-    const pad = 6;
-    if (pointInRect(player.x, player.y, r.x - pad, r.y - pad, r.w + pad*2, r.h + pad*2)) {
-      if (!isLaneSafeForPlayer(s)) {
-        killPlayer('Hit by a dangerous statue wave lane');
-        return;
-      }
-      // safe lane — survive even without TS (player guessed or remembered)
-    }
-  }
-}
-
-// ─── Orbs (decay over lifetime, only boss consumes) ────────────
-function spawnOrb() {
-  orbs.push({
-    x: lastAltar.x,
-    y: lastAltar.y,
-    speed: orbSpeedVal * 18, // slider 1..10 → ~18..180 px/s
-    life: ORB_LIFETIME,
-    maxLife: ORB_LIFETIME
-  });
-}
-
-function updateOrbs(dt) {
-  if (gameTime >= nextOrbAt) {
-    spawnOrb();
-    nextOrbAt = gameTime + 26;
-  }
-  for (let i = orbs.length - 1; i >= 0; i--) {
-    const o = orbs[i];
-    o.life -= dt;
-    o.speed = orbSpeedVal * 18; // live slider update
-    if (o.life <= 0) {
-      orbs.splice(i, 1);
-      continue;
-    }
-    const dx = boss.x - o.x;
-    const dy = boss.y - o.y;
-    const d = Math.hypot(dx, dy) || 1;
-    o.x += (dx / d) * o.speed * dt;
-    o.y += (dy / d) * o.speed * dt;
-
-    // only boss eats the orb
-    if (d < BOSS_R + ORB_R) {
-      // heal scaled by remaining life fraction (more heal if fresh)
-      const frac = o.life / o.maxLife;
-      boss.hp = Math.min(100, boss.hp + 5 * frac);
-      orbs.splice(i, 1);
-    }
-    // player does NOT intercept
-  }
-}
-
-// ─── Tormented Visions ─────────────────────────────────────────
-function getBossCastRemaining() {
-  return boss.casting && boss.castEndsAt > gameTime ? boss.castEndsAt - gameTime : 0;
-}
-
-function updateTV(/* dt unused — driven by gameTime */) {
-  if (boss.casting) {
-    if (gameTime >= boss.castEndsAt) {
-      boss.casting = false;
-      boss.castEndsAt = 0;
-      boss.nextCastAt = gameTime + 25;
-    }
-    return;
-  }
-  if (gameTime >= boss.nextCastAt) {
-    if (hasTrueSight()) {
-      boss.casting = true;
-      boss.castEndsAt = gameTime + 5;
-    }
-  }
-}
-
-// ─── Eradication: telegraph → instant resolve ──────────────────
-function spawnErad() {
-  eradStatues = [
-    { x: W/2, y: 25 },
-    { x: W-25, y: H/2 },
-    { x: W/2, y: H-25 },
-    { x: 25,  y: H/2 }
-  ];
-  eradState = 'telegraph';
-  eradTimer = ERAD_TELEGRAPH;
-  eradCastProgress = 0;
-  // initial beam targets
-  updateEradBeamTargets();
-}
-
-function updateEradBeamTargets() {
-  // beams always follow current positions of player + NPCs during telegraph
-  const targets = [
-    { x: player.x, y: player.y, alive: !player.dead },
-    ...npcs.map(n => ({ x: n.x, y: n.y, alive: n.alive }))
-  ];
-  eradBeams = [];
-  for (let i = 0; i < 4; i++) {
-    const s = eradStatues[i];
-    const t = targets[i];
-    const dx = t.x - s.x;
-    const dy = t.y - s.y;
-    const len = Math.hypot(dx, dy) || 1;
-    const ext = 1400;
-    eradBeams.push({
-      fromX: s.x, fromY: s.y,
-      toX: s.x + (dx / len) * ext,
-      toY: s.y + (dy / len) * ext,
-      targetIdx: i,
-      targetAlive: t.alive
-    });
-  }
-}
-
-function resolveErad() {
-  // Instant snapshot: check if any player stands in a FOREIGN beam
-  // Own beam (idx 0 for tank) is safe for tank.
-  // If tank is in beam 1/2/3 → tank dies.
-  // If any NPC is in a beam that is not their own → that NPC dies → wipe message.
-  updateEradBeamTargets(); // final positions
-
-  // Check tank vs foreign beams
-  for (let i = 1; i < 4; i++) {
-    const b = eradBeams[i];
-    if (distToSegment(player.x, player.y, b.fromX, b.fromY, b.toX, b.toY) < 16) {
-      killPlayer('Hit by another player\'s Eradication beam at cast');
-      return;
-    }
-  }
-
-  // Check NPCs vs foreign beams (including tank's beam)
-  for (let ni = 0; ni < 3; ni++) {
-    const n = npcs[ni];
-    if (!n.alive) continue;
-    for (let bi = 0; bi < 4; bi++) {
-      if (bi === ni + 1) continue; // own beam safe
-      const b = eradBeams[bi];
-      if (distToSegment(n.x, n.y, b.fromX, b.fromY, b.toX, b.toY) < 16) {
-        n.alive = false;
-        killPlayer('Wipe: ally hit by another player\'s Eradication beam');
-        return;
-      }
-    }
-  }
-
-  // success — clear
-  // 25s between cast starts: telegraph 5s already elapsed → wait 20s
-  eradState = 'waiting';
-  eradTimer = 20;
-  eradStatues = [];
-  eradBeams = [];
-}
-
-function updateErad(dt) {
-  if (eradState === 'waiting') {
-    eradTimer -= dt;
-    if (eradTimer <= 0) spawnErad();
-  } else if (eradState === 'telegraph') {
-    eradTimer -= dt;
-    eradCastProgress = 1 - Math.max(0, eradTimer) / ERAD_TELEGRAPH;
-    // beams continuously track targets so player can dodge out
-    updateEradBeamTargets();
-    if (eradTimer <= 0) {
-      resolveErad();
-    }
-  }
-}
-
-// ─── True Sight ────────────────────────────────────────────────
-// Remaining time derived from absolute gameTime — immune to dt drift
-function getTrueSightRemaining() {
-  return trueSightEndsAt > gameTime ? trueSightEndsAt - gameTime : 0;
-}
-function getTiredEyesRemaining() {
-  if (getTrueSightRemaining() > 0) return 0;
-  return tiredEyesEndsAt > gameTime ? tiredEyesEndsAt - gameTime : 0;
-}
-function hasTrueSight() {
-  return getTrueSightRemaining() > 0;
-}
-
-function updateTrueSight(/* dt unused — driven by gameTime */) {
-  if (hasTrueSight()) {
-    // apply Tired Eyes stacks every 2 game-seconds while TS is active
-    while (tsNextStackAt > 0 && gameTime >= tsNextStackAt && hasTrueSight()) {
-      tiredEyesStacks++;
-      tsNextStackAt += 2;
-    }
-    // keep remembering safe lanes of current wave
-    if (statues.length) {
-      for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
-    }
-  } else {
-    // TS not active — detect transition from active → expired
-    if (trueSightEndsAt > 0 && gameTime >= trueSightEndsAt) {
-      trueSightEndsAt = 0; // mark transition handled
-      tsNextStackAt = 0;
-      // residual 15s keeps stacks visible, then they clear
-      if (tiredEyesStacks > 0) {
-        tiredEyesEndsAt = gameTime + 15;
-      }
-    }
-    // residual expired → clear stacks
-    if (tiredEyesEndsAt > 0 && gameTime >= tiredEyesEndsAt) {
-      tiredEyesEndsAt = 0;
-      tiredEyesStacks = 0;
-    }
-  }
-}
-
-function activateTrueSight(altar) {
-  // Cannot refresh while True Sight is still active
-  if (hasTrueSight()) return;
-  trueSightEndsAt = gameTime + 20;
-  lastAltar = altar;
-  tiredEyesEndsAt = 0; // clear residual
-  tsNextStackAt = gameTime + 2; // first stack after 2 game-seconds
-  // immediately reveal current wave safes
-  if (statues.length) {
-    for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
-  }
-}
-
-// ─── Portal ────────────────────────────────────────────────────
-function getPortalCD() {
-  return portalReadyAt > gameTime ? portalReadyAt - gameTime : 0;
-}
-
-function doPortalTeleport(fromA) {
-  // Instant snap — no interpolation
-  if (fromA) {
-    player.x = portal.b.x;
-    player.y = portal.b.y;
-  } else {
-    player.x = portal.a.x;
-    player.y = portal.a.y;
-  }
-  portalReadyAt = gameTime + 20;
-}
-
-function tryPortal(mx, my) {
-  if (getPortalCD() > 0) return false;
-  const r = 32;
-  if (dist(mx, my, portal.a.x, portal.a.y) < r) {
-    doPortalTeleport(true);
-    return true;
-  }
-  if (dist(mx, my, portal.b.x, portal.b.y) < r) {
-    doPortalTeleport(false);
-    return true;
-  }
-  return false;
-}
-
-// ─── Movement ──────────────────────────────────────────────────
-function updatePlayer(dt) {
-  if (player.dead) return;
-  let dx = 0, dy = 0;
-  if (keys['KeyW'] || keys['ArrowUp'])    dy -= 1;
-  if (keys['KeyS'] || keys['ArrowDown'])  dy += 1;
-  if (keys['KeyA'] || keys['ArrowLeft'])  dx -= 1;
-  if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
-  if (dx || dy) {
-    const len = Math.hypot(dx, dy);
-    dx /= len; dy /= len;
-  }
-  const speed = tankSpeedVal * 55;
-  player.x = clamp(player.x + dx * speed * dt, PLAYER_R + 4, W - PLAYER_R - 4);
-  player.y = clamp(player.y + dy * speed * dt, PLAYER_R + 4, H - PLAYER_R - 4);
-  // Portal only via click — no proximity auto-trigger
-}
-
-function updateBoss(dt) {
-  if (boss.casting) return;
-  const dx = player.x - boss.x;
-  const dy = player.y - boss.y;
-  const d = Math.hypot(dx, dy) || 1;
-  // bossSpeedVal 1..12 → ~55..660 px/s (default 6 ≈ 330)
-  const bossSpeed = bossSpeedVal * 55;
-  if (d > 8) {
-    boss.x += (dx / d) * bossSpeed * dt;
-    boss.y += (dy / d) * bossSpeed * dt;
-  }
-  boss.x = clamp(boss.x, 40, W - 40);
-  boss.y = clamp(boss.y, 40, H - 40);
-}
-
-function killPlayer(reason) {
-  if (player.dead) return;
-  player.dead = true;
-  player.deathReason = reason;
-  running = false;
-  document.getElementById('deathReason').textContent = reason;
-  document.getElementById('deathOverlay').style.display = 'flex';
-  document.getElementById('startBtn').disabled = false;
-}
-
-// ─── Click ─────────────────────────────────────────────────────
-canvas.addEventListener('click', e => {
-  if (player.dead || !running) return;
-  const rect = canvas.getBoundingClientRect();
-  const mx = (e.clientX - rect.left) * (W / rect.width);
-  const my = (e.clientY - rect.top) * (H / rect.height);
-
-  if (tryPortal(mx, my)) return;
-
-  for (const a of altars) {
-    if (dist(mx, my, a.x, a.y) < ALTAR_SIZE) {
-      activateTrueSight(a);
-      return;
-    }
-  }
-});
-
-// ─── Drawing ───────────────────────────────────────────────────
-function draw() {
-  ctx.clearRect(0, 0, W, H);
-
-  // grid
-  ctx.strokeStyle = '#252532';
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 8; i++) {
-    const p = i * 100;
-    ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, H); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(W, p); ctx.stroke();
-  }
-
-  // portal line
-  ctx.strokeStyle = getPortalCD() > 0 ? '#22d3ee33' : '#22d3ee55';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([8, 6]);
-  ctx.beginPath();
-  ctx.moveTo(portal.a.x, portal.a.y);
-  ctx.lineTo(portal.b.x, portal.b.y);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  drawPortalPad(portal.a);
-  drawPortalPad(portal.b);
-
-  // altars
-  for (const a of altars) {
-    ctx.fillStyle = '#7c3aed';
-    ctx.beginPath();
-    ctx.moveTo(a.x, a.y - 18);
-    ctx.lineTo(a.x + 16, a.y + 12);
-    ctx.lineTo(a.x - 16, a.y + 12);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = '#c084fc';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    if (a === lastAltar) {
-      ctx.strokeStyle = '#c084fc88';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(a.x, a.y, 26, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  }
-
-  // wave statues + strips
-  if (waveState === 'delay' || waveState === 'moving') {
-    for (const s of statues) {
-      ctx.fillStyle = '#64748b';
-      ctx.fillRect(s.x - 10, s.y - 16, 20, 32);
-      ctx.fillStyle = '#94a3b8';
-      ctx.beginPath();
-      ctx.arc(s.x, s.y - 18, 10, 0, Math.PI * 2);
-      ctx.fill();
-
-      const showColors = hasTrueSight() || rememberedSafe.has(s.idx);
-      // during delay show faint preview if known
-      if (waveState === 'delay' && showColors) {
-        ctx.fillStyle = s.safe ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
-        let hx = s.x, hy = s.y, hw = 22, hh = 50;
-        if (waveSide === 0) { hy = 40; hh = 70; }
-        else if (waveSide === 1) { hx = W - 90; hw = 70; hh = 22; }
-        else if (waveSide === 2) { hy = H - 110; hh = 70; }
-        else { hx = 20; hw = 70; hh = 22; }
-        ctx.fillRect(hx - hw/2, hy, hw, hh);
-      }
-
-      if (waveState === 'moving') {
-        const r = getWaveStripRect(s, waveProgress);
-        if (showColors) {
-          ctx.fillStyle = s.safe ? 'rgba(74,222,128,0.38)' : 'rgba(248,113,113,0.48)';
-          ctx.strokeStyle = s.safe ? '#4ade80' : '#f87171';
+    function drawIcon(img, x, y, radius, fallbackColor) {
+        const size = radius * 2;
+        if (img && img.ready) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(img, x - radius, y - radius, size, size);
+            ctx.restore();
+            // subtle ring
+            ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.stroke();
         } else {
-          // unknown — uniform danger look
-          ctx.fillStyle = 'rgba(180,80,80,0.42)';
-          ctx.strokeStyle = '#c06060';
+            ctx.fillStyle = fallbackColor;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
         }
-        ctx.fillRect(r.x, r.y, r.w, r.h);
+    }
+
+    // ─── State ─────────────────────────────────────────────────────
+    let running = false;
+    let gameTime = 0;
+    let lastFrame = 0;
+    let gameSpeedMult = 1;
+    let tankSpeedVal = 5;
+    let bossSpeedVal = 6;
+    let orbSpeedVal = 1;
+
+    const player = {
+        x: W / 2, y: H / 2,
+        dead: false, deathReason: ''
+    };
+
+    const keys = {};
+    window.addEventListener('keydown', e => {
+        keys[e.code] = true;
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(e.code))
+            e.preventDefault();
+    });
+    window.addEventListener('keyup', e => {
+        keys[e.code] = false;
+    });
+
+    const altars = [
+        {x: 40, y: 40, name: 'TL'},
+        {x: W - 40, y: 40, name: 'TR'},
+        {x: 40, y: H - 40, name: 'BL'},
+        {x: W - 40, y: H - 40, name: 'BR'}
+    ];
+    let lastAltar = altars[0];
+
+    // True Sight — durations tracked via absolute gameTime so they stay
+    // perfectly in sync with waves/orbs/erad at any game-speed multiplier
+    let trueSightEndsAt = 0;       // gameTime when TS expires (0 = inactive)
+    let tiredEyesStacks = 0;
+    let tiredEyesEndsAt = 0;       // gameTime when residual Tired Eyes ends
+    let tsNextStackAt = 0;         // gameTime when next Tired Eyes stack applies
+    // Remember safe lanes seen while TS was active (for current wave)
+    let rememberedSafe = new Set(); // statue indices that were seen as safe
+
+    const boss = {
+        x: 60, y: 60,
+        hp: 100,
+        casting: false,
+        castEndsAt: 0,    // gameTime when current TV cast finishes
+        nextCastAt: 25,   // gameTime when next TV may start
+        color: '#e11d48'
+    };
+
+    // Waves: delay 5 + move 5 + pause 5 = 15s between wave starts
+    // Thick strips so tank cannot slip between consecutive waves
+    let waveState = 'waiting'; // waiting | delay | moving | pause
+    let waveTimer = 5;
+    let waveSide = 0;
+    let wavePattern = [];
+    let waveProgress = 0;
+    let statues = [];
+    let stripThickness = 110;
+
+    // Orbs — first at +15s, every 26s; decay over lifetime
+    let orbs = [];
+    let nextOrbAt = 15;
+    const ORB_LIFETIME = 26;
+
+    // Eradication: telegraph (preview beams follow targets) → instant resolve
+    let eradState = 'waiting'; // waiting | telegraph | resolve
+    let eradTimer = 25;
+    let eradStatues = [];
+    let eradBeams = []; // live preview lines that track targets
+    let eradCastProgress = 0;
+    const ERAD_TELEGRAPH = 5; // seconds of preview before snap
+
+    const npcs = [
+        {x: W * 0.3, y: H * 0.3, alive: true},
+        {x: W * 0.7, y: H * 0.3, alive: true},
+        {x: W * 0.5, y: H * 0.7, alive: true}
+    ];
+
+    // Portals closer to center-diagonal
+    const portal = {
+        a: {x: 220, y: H - 220},
+        b: {x: W - 220, y: 220}
+    };
+    let portalReadyAt = 0; // gameTime when portal becomes ready again
+
+    const DAMAGE_PER_WAVE = 25 / 16;
+    let wavesCompleted = 0;
+
+    // Safe statue indices (0-based). Pattern 5 = statues 3,4,5 (center)
+    const PATTERNS = [
+        [0, 1],        // 1, 2
+        [5, 6],        // 6, 7
+        [0, 2, 4, 6],  // 1, 3, 5, 7
+        [1, 3, 5],     // 2, 4, 6
+        [2, 3, 4]      // 3, 4, 5 (center)
+    ];
+
+    function dist(ax, ay, bx, by) {
+        return Math.hypot(ax - bx, ay - by);
+    }
+
+    function clamp(v, lo, hi) {
+        return Math.max(lo, Math.min(hi, v));
+    }
+
+    function pointInRect(px, py, rx, ry, rw, rh) {
+        return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
+    }
+
+    function distToSegment(px, py, x1, y1, x2, y2) {
+        const dx = x2 - x1, dy = y2 - y1;
+        const len2 = dx * dx + dy * dy;
+        if (len2 === 0) return Math.hypot(px - x1, py - y1);
+        let t = ((px - x1) * dx + (py - y1) * dy) / len2;
+        t = clamp(t, 0, 1);
+        return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+    }
+
+    // ─── Reset ─────────────────────────────────────────────────────
+    function resetGame() {
+        running = true;
+        gameTime = 0;
+        lastFrame = performance.now();
+        player.x = W / 2;
+        player.y = H / 2;
+        player.dead = false;
+        player.deathReason = '';
+
+        trueSightEndsAt = 0;
+        tiredEyesStacks = 0;
+        tiredEyesEndsAt = 0;
+        tsNextStackAt = 0;
+        rememberedSafe = new Set();
+
+        boss.x = 60;
+        boss.y = 60;
+        boss.hp = 100;
+        boss.casting = false;
+        boss.castEndsAt = 0;
+        boss.nextCastAt = 25;
+
+        waveState = 'waiting';
+        waveTimer = 5;
+        statues = [];
+        waveProgress = 0;
+
+        orbs = [];
+        nextOrbAt = 15;
+        lastAltar = altars[0];
+
+        eradState = 'waiting';
+        eradTimer = 25;
+        eradStatues = [];
+        eradBeams = [];
+
+        portalReadyAt = 0;
+        wavesCompleted = 0;
+
+        npcs[0].x = W * 0.3;
+        npcs[0].y = H * 0.3;
+        npcs[0].alive = true;
+        npcs[1].x = W * 0.7;
+        npcs[1].y = H * 0.3;
+        npcs[1].alive = true;
+        npcs[2].x = W * 0.5;
+        npcs[2].y = H * 0.7;
+        npcs[2].alive = true;
+
+        document.getElementById('deathOverlay').style.display = 'none';
+        document.getElementById('startBtn').disabled = true;
+    }
+
+    // ─── Wave system (no gap between waves) ────────────────────────
+    function spawnWave() {
+        waveSide = Math.floor(Math.random() * 4);
+        const pat = PATTERNS[Math.floor(Math.random() * PATTERNS.length)];
+        wavePattern = pat;
+        statues = [];
+        rememberedSafe = new Set(); // new wave — clear memory of previous lanes
+        const margin = 40;
+        const usable = (waveSide % 2 === 0 ? W : H) - margin * 2;
+        const step = usable / 6;
+
+        for (let i = 0; i < 7; i++) {
+            let sx, sy;
+            if (waveSide === 0) {
+                sx = margin + i * step;
+                sy = 28;
+            } else if (waveSide === 1) {
+                sx = W - 28;
+                sy = margin + i * step;
+            } else if (waveSide === 2) {
+                sx = margin + i * step;
+                sy = H - 28;
+            } else {
+                sx = 28;
+                sy = margin + i * step;
+            }
+            statues.push({x: sx, y: sy, safe: pat.includes(i), idx: i});
+        }
+        // If TS is active at spawn, immediately remember safe lanes
+        if (hasTrueSight()) {
+            for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
+        }
+        waveState = 'delay';
+        waveTimer = 5;
+        waveProgress = 0;
+    }
+
+    function updateWave(dt) {
+        if (waveState === 'waiting') {
+            waveTimer -= dt;
+            if (waveTimer <= 0) spawnWave();
+        } else if (waveState === 'delay') {
+            waveTimer -= dt;
+            if (hasTrueSight()) {
+                for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
+            }
+            if (waveTimer <= 0) {
+                waveState = 'moving';
+                waveTimer = 5;
+                waveProgress = 0;
+            }
+        } else if (waveState === 'moving') {
+            waveTimer -= dt;
+            waveProgress = 1 - Math.max(0, waveTimer) / 5;
+            if (hasTrueSight()) {
+                for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
+            }
+            checkWaveCollision();
+            if (waveTimer <= 0) {
+                // pause 5s → total cycle delay5+move5+pause5 = 15s between wave starts
+                wavesCompleted++;
+                boss.hp = Math.max(0, boss.hp - DAMAGE_PER_WAVE);
+                waveState = 'pause';
+                waveTimer = 5;
+            }
+        } else if (waveState === 'pause') {
+            waveTimer -= dt;
+            if (waveTimer <= 0) spawnWave();
+        }
+    }
+
+    function getWaveStripRect(statue, progress) {
+        // Thick moving front so consecutive waves overlap / leave no safe gap
+        const thickness = stripThickness;
+        const len = (waveSide % 2 === 0 ? H : W);
+        const offset = progress * len;
+
+        if (waveSide === 0) { // top → down
+            return {x: statue.x - thickness / 2, y: offset - thickness / 2, w: thickness, h: thickness};
+        } else if (waveSide === 1) { // right → left
+            return {x: W - offset - thickness / 2, y: statue.y - thickness / 2, w: thickness, h: thickness};
+        } else if (waveSide === 2) { // bottom → up
+            return {x: statue.x - thickness / 2, y: H - offset - thickness / 2, w: thickness, h: thickness};
+        } else { // left → right
+            return {x: offset - thickness / 2, y: statue.y - thickness / 2, w: thickness, h: thickness};
+        }
+    }
+
+    function isLaneSafeForPlayer(statue) {
+        // Passages always exist mechanically.
+        // Player survives if the lane is actually safe (regardless of TS).
+        // Visuals: only shown when TS active or remembered from earlier TS.
+        return statue.safe;
+    }
+
+    function checkWaveCollision() {
+        if (player.dead) return;
+        for (const s of statues) {
+            const r = getWaveStripRect(s, waveProgress);
+            const pad = 6;
+            if (pointInRect(player.x, player.y, r.x - pad, r.y - pad, r.w + pad * 2, r.h + pad * 2)) {
+                if (!isLaneSafeForPlayer(s)) {
+                    killPlayer('Hit by a dangerous statue wave lane');
+                    return;
+                }
+                // safe lane — survive even without TS (player guessed or remembered)
+            }
+        }
+    }
+
+    // ─── Orbs (decay over lifetime, only boss consumes) ────────────
+    function spawnOrb() {
+        orbs.push({
+            x: lastAltar.x,
+            y: lastAltar.y,
+            speed: orbSpeedVal * 18, // slider 1..10 → ~18..180 px/s
+            life: ORB_LIFETIME,
+            maxLife: ORB_LIFETIME
+        });
+    }
+
+    function updateOrbs(dt) {
+        if (gameTime >= nextOrbAt) {
+            spawnOrb();
+            nextOrbAt = gameTime + 26;
+        }
+        for (let i = orbs.length - 1; i >= 0; i--) {
+            const o = orbs[i];
+            o.life -= dt;
+            o.speed = orbSpeedVal * 18; // live slider update
+            if (o.life <= 0) {
+                orbs.splice(i, 1);
+                continue;
+            }
+            const dx = boss.x - o.x;
+            const dy = boss.y - o.y;
+            const d = Math.hypot(dx, dy) || 1;
+            o.x += (dx / d) * o.speed * dt;
+            o.y += (dy / d) * o.speed * dt;
+
+            // only boss eats the orb
+            if (d < BOSS_R + ORB_R) {
+                // heal scaled by remaining life fraction (more heal if fresh)
+                const frac = o.life / o.maxLife;
+                boss.hp = Math.min(100, boss.hp + 5 * frac);
+                orbs.splice(i, 1);
+            }
+            // player does NOT intercept
+        }
+    }
+
+    // ─── Tormented Visions ─────────────────────────────────────────
+    function getBossCastRemaining() {
+        return boss.casting && boss.castEndsAt > gameTime ? boss.castEndsAt - gameTime : 0;
+    }
+
+    function updateTV(/* dt unused — driven by gameTime */) {
+        if (boss.casting) {
+            // TV only exists while True Sight is up — drop TS and the cast cancels
+            if (!hasTrueSight()) {
+                const leftover = Math.max(0, boss.castEndsAt - gameTime);
+                boss.casting = false;
+                boss.castEndsAt = 0;
+                boss.nextCastAt = gameTime + 25 + leftover;
+                return;
+            }
+            if (gameTime >= boss.castEndsAt) {
+                boss.casting = false;
+                boss.castEndsAt = 0;
+                boss.nextCastAt = gameTime + 25;
+            }
+            return;
+        }
+        if (gameTime >= boss.nextCastAt) {
+            if (hasTrueSight()) {
+                boss.casting = true;
+                boss.castEndsAt = gameTime + 5;
+            }
+        }
+    }
+
+    // ─── Eradication: telegraph → instant resolve ──────────────────
+    function spawnErad() {
+        eradStatues = [
+            {x: W / 2, y: 25},
+            {x: W - 25, y: H / 2},
+            {x: W / 2, y: H - 25},
+            {x: 25, y: H / 2}
+        ];
+        eradState = 'telegraph';
+        eradTimer = ERAD_TELEGRAPH;
+        eradCastProgress = 0;
+        // initial beam targets
+        updateEradBeamTargets();
+    }
+
+    function updateEradBeamTargets() {
+        // beams always follow current positions of player + NPCs during telegraph
+        const targets = [
+            {x: player.x, y: player.y, alive: !player.dead},
+            ...npcs.map(n => ({x: n.x, y: n.y, alive: n.alive}))
+        ];
+        eradBeams = [];
+        for (let i = 0; i < 4; i++) {
+            const s = eradStatues[i];
+            const t = targets[i];
+            // Beam ends on the targeted player — does not continue through the arena
+            eradBeams.push({
+                fromX: s.x, fromY: s.y,
+                toX: t.x, toY: t.y,
+                targetIdx: i,
+                targetAlive: t.alive
+            });
+        }
+    }
+
+    function resolveErad() {
+        // Instant snapshot: check if any player stands in a FOREIGN beam
+        // Own beam (idx 0 for tank) is safe for tank.
+        // If tank is in beam 1/2/3 → tank dies.
+        // If any NPC is in a beam that is not their own → that NPC dies → wipe message.
+        updateEradBeamTargets(); // final positions
+
+        // Check tank vs foreign beams
+        for (let i = 1; i < 4; i++) {
+            const b = eradBeams[i];
+            if (distToSegment(player.x, player.y, b.fromX, b.fromY, b.toX, b.toY) < 16) {
+                killPlayer('Hit by another player\'s Eradication beam at cast');
+                return;
+            }
+        }
+
+        // Check NPCs vs foreign beams (including tank's beam)
+        for (let ni = 0; ni < 3; ni++) {
+            const n = npcs[ni];
+            if (!n.alive) continue;
+            for (let bi = 0; bi < 4; bi++) {
+                if (bi === ni + 1) continue; // own beam safe
+                const b = eradBeams[bi];
+                if (distToSegment(n.x, n.y, b.fromX, b.fromY, b.toX, b.toY) < 16) {
+                    n.alive = false;
+                    killPlayer('Wipe: ally hit by another player\'s Eradication beam');
+                    return;
+                }
+            }
+        }
+
+        // success — clear
+        // 25s between cast starts: telegraph 5s already elapsed → wait 20s
+        eradState = 'waiting';
+        eradTimer = 20;
+        eradStatues = [];
+        eradBeams = [];
+    }
+
+    function updateErad(dt) {
+        if (eradState === 'waiting') {
+            eradTimer -= dt;
+            if (eradTimer <= 0) spawnErad();
+        } else if (eradState === 'telegraph') {
+            eradTimer -= dt;
+            eradCastProgress = 1 - Math.max(0, eradTimer) / ERAD_TELEGRAPH;
+            // beams continuously track targets so player can dodge out
+            updateEradBeamTargets();
+            if (eradTimer <= 0) {
+                resolveErad();
+            }
+        }
+    }
+
+    // ─── True Sight ────────────────────────────────────────────────
+    // Remaining time derived from absolute gameTime — immune to dt drift
+    function getTrueSightRemaining() {
+        return trueSightEndsAt > gameTime ? trueSightEndsAt - gameTime : 0;
+    }
+
+    function getTiredEyesRemaining() {
+        if (getTrueSightRemaining() > 0) return 0;
+        return tiredEyesEndsAt > gameTime ? tiredEyesEndsAt - gameTime : 0;
+    }
+
+    function hasTrueSight() {
+        return getTrueSightRemaining() > 0;
+    }
+
+    function updateTrueSight(/* dt unused — driven by gameTime */) {
+        if (hasTrueSight()) {
+            // apply Tired Eyes stacks every 2 game-seconds while TS is active
+            while (tsNextStackAt > 0 && gameTime >= tsNextStackAt && hasTrueSight()) {
+                tiredEyesStacks++;
+                tsNextStackAt += 2;
+            }
+            // keep remembering safe lanes of current wave
+            if (statues.length) {
+                for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
+            }
+        } else {
+            // TS not active — detect transition from active → expired
+            if (trueSightEndsAt > 0 && gameTime >= trueSightEndsAt) {
+                trueSightEndsAt = 0; // mark transition handled
+                tsNextStackAt = 0;
+                // residual 15s keeps stacks visible, then they clear
+                if (tiredEyesStacks > 0) {
+                    tiredEyesEndsAt = gameTime + 15;
+                }
+            }
+            // residual expired → clear stacks
+            if (tiredEyesEndsAt > 0 && gameTime >= tiredEyesEndsAt) {
+                tiredEyesEndsAt = 0;
+                tiredEyesStacks = 0;
+            }
+        }
+    }
+
+    function activateTrueSight(altar) {
+        // Cannot refresh while True Sight is still active
+        if (hasTrueSight()) return;
+        trueSightEndsAt = gameTime + 20;
+        lastAltar = altar;
+        tiredEyesEndsAt = 0; // clear residual
+        tsNextStackAt = gameTime + 2; // first stack after 2 game-seconds
+        // immediately reveal current wave safes
+        if (statues.length) {
+            for (const s of statues) if (s.safe) rememberedSafe.add(s.idx);
+        }
+    }
+
+    // ─── Portal ────────────────────────────────────────────────────
+    function getPortalCD() {
+        return portalReadyAt > gameTime ? portalReadyAt - gameTime : 0;
+    }
+
+    function doPortalTeleport(fromA) {
+        // Instant snap — no interpolation
+        if (fromA) {
+            player.x = portal.b.x;
+            player.y = portal.b.y;
+        } else {
+            player.x = portal.a.x;
+            player.y = portal.a.y;
+        }
+        portalReadyAt = gameTime + 20;
+    }
+
+    function tryPortal(mx, my) {
+        if (getPortalCD() > 0) return false;
+        const r = 32;
+        if (dist(mx, my, portal.a.x, portal.a.y) < r) {
+            doPortalTeleport(true);
+            return true;
+        }
+        if (dist(mx, my, portal.b.x, portal.b.y) < r) {
+            doPortalTeleport(false);
+            return true;
+        }
+        return false;
+    }
+
+    // ─── Movement ──────────────────────────────────────────────────
+    function updatePlayer(dt) {
+        if (player.dead) return;
+        let dx = 0, dy = 0;
+        if (keys['KeyW'] || keys['ArrowUp']) dy -= 1;
+        if (keys['KeyS'] || keys['ArrowDown']) dy += 1;
+        if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
+        if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
+        if (dx || dy) {
+            const len = Math.hypot(dx, dy);
+            dx /= len;
+            dy /= len;
+        }
+        const speed = tankSpeedVal * 55;
+        player.x = clamp(player.x + dx * speed * dt, PLAYER_R + 4, W - PLAYER_R - 4);
+        player.y = clamp(player.y + dy * speed * dt, PLAYER_R + 4, H - PLAYER_R - 4);
+        // Portal only via click — no proximity auto-trigger
+    }
+
+    function updateBoss(dt) {
+        if (boss.casting) return;
+        const dx = player.x - boss.x;
+        const dy = player.y - boss.y;
+        const d = Math.hypot(dx, dy) || 1;
+        // bossSpeedVal 1..12 → ~55..660 px/s (default 6 ≈ 330)
+        const bossSpeed = bossSpeedVal * 55;
+        if (d > 8) {
+            boss.x += (dx / d) * bossSpeed * dt;
+            boss.y += (dy / d) * bossSpeed * dt;
+        }
+        boss.x = clamp(boss.x, 40, W - 40);
+        boss.y = clamp(boss.y, 40, H - 40);
+    }
+
+    function killPlayer(reason) {
+        if (player.dead) return;
+        player.dead = true;
+        player.deathReason = reason;
+        running = false;
+        document.getElementById('deathReason').textContent = reason;
+        document.getElementById('deathOverlay').style.display = 'flex';
+        document.getElementById('startBtn').disabled = false;
+    }
+
+    // ─── Click ─────────────────────────────────────────────────────
+    canvas.addEventListener('click', e => {
+        if (player.dead || !running) return;
+        const rect = canvas.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) * (W / rect.width);
+        const my = (e.clientY - rect.top) * (H / rect.height);
+
+        if (tryPortal(mx, my)) return;
+
+        for (const a of altars) {
+            if (dist(mx, my, a.x, a.y) < ALTAR_SIZE) {
+                activateTrueSight(a);
+                return;
+            }
+        }
+    });
+
+    // ─── Drawing ───────────────────────────────────────────────────
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // grid
+        ctx.strokeStyle = '#252532';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 8; i++) {
+            const p = i * 100;
+            ctx.beginPath();
+            ctx.moveTo(p, 0);
+            ctx.lineTo(p, H);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, p);
+            ctx.lineTo(W, p);
+            ctx.stroke();
+        }
+
+        // portal line
+        ctx.strokeStyle = getPortalCD() > 0 ? '#22d3ee33' : '#22d3ee55';
         ctx.lineWidth = 2;
-        ctx.strokeRect(r.x, r.y, r.w, r.h);
-      }
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath();
+        ctx.moveTo(portal.a.x, portal.a.y);
+        ctx.lineTo(portal.b.x, portal.b.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        drawPortalPad(portal.a);
+        drawPortalPad(portal.b);
+
+        // altars
+        for (const a of altars) {
+            ctx.fillStyle = '#7c3aed';
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y - 18);
+            ctx.lineTo(a.x + 16, a.y + 12);
+            ctx.lineTo(a.x - 16, a.y + 12);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#c084fc';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            if (a === lastAltar) {
+                ctx.strokeStyle = '#c084fc88';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.arc(a.x, a.y, 26, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        // wave statues + strips
+        if (waveState === 'delay' || waveState === 'moving') {
+            for (const s of statues) {
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(s.x - 10, s.y - 16, 20, 32);
+                ctx.fillStyle = '#94a3b8';
+                ctx.beginPath();
+                ctx.arc(s.x, s.y - 18, 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                const showColors = hasTrueSight() || rememberedSafe.has(s.idx);
+                // during delay show faint preview if known
+                if (waveState === 'delay' && showColors) {
+                    ctx.fillStyle = s.safe ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
+                    let hx = s.x, hy = s.y, hw = 22, hh = 50;
+                    if (waveSide === 0) {
+                        hy = 40;
+                        hh = 70;
+                    } else if (waveSide === 1) {
+                        hx = W - 90;
+                        hw = 70;
+                        hh = 22;
+                    } else if (waveSide === 2) {
+                        hy = H - 110;
+                        hh = 70;
+                    } else {
+                        hx = 20;
+                        hw = 70;
+                        hh = 22;
+                    }
+                    ctx.fillRect(hx - hw / 2, hy, hw, hh);
+                }
+
+                if (waveState === 'moving') {
+                    const r = getWaveStripRect(s, waveProgress);
+                    if (showColors) {
+                        ctx.fillStyle = s.safe ? 'rgba(74,222,128,0.38)' : 'rgba(248,113,113,0.48)';
+                        ctx.strokeStyle = s.safe ? '#4ade80' : '#f87171';
+                    } else {
+                        // unknown — uniform danger look
+                        ctx.fillStyle = 'rgba(180,80,80,0.42)';
+                        ctx.strokeStyle = '#c06060';
+                    }
+                    ctx.fillRect(r.x, r.y, r.w, r.h);
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(r.x, r.y, r.w, r.h);
+                }
+            }
+        }
+
+        // Eradication telegraph / statues
+        if (eradState === 'telegraph') {
+            for (const s of eradStatues) {
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, 14, 0, Math.PI * 2);
+                ctx.fill();
+                // cast progress ring
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, 22, -Math.PI / 2, -Math.PI / 2 + eradCastProgress * Math.PI * 2);
+                ctx.stroke();
+            }
+            // live tracking beams (telegraph)
+            for (let i = 0; i < eradBeams.length; i++) {
+                const b = eradBeams[i];
+                const isOwn = i === 0;
+                ctx.strokeStyle = isOwn ? 'rgba(74,222,128,0.55)' : 'rgba(239,68,68,0.55)';
+                ctx.lineWidth = isOwn ? 7 : 9;
+                ctx.setLineDash([12, 8]);
+                ctx.beginPath();
+                ctx.moveTo(b.fromX, b.fromY);
+                ctx.lineTo(b.toX, b.toY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                // bright core
+                ctx.strokeStyle = isOwn ? '#4ade80' : '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(b.fromX, b.fromY);
+                ctx.lineTo(b.toX, b.toY);
+                ctx.stroke();
+            }
+            // warning text
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('ERADICATION — leave foreign beams! ' + eradTimer.toFixed(1) + 's', W / 2, 55);
+        }
+
+        // orbs with life bar
+        for (const o of orbs) {
+            const frac = o.life / o.maxLife;
+            ctx.fillStyle = `rgba(251,191,36,${0.35 + frac * 0.65})`;
+            ctx.beginPath();
+            ctx.arc(o.x, o.y, ORB_R, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#fde68a';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // life ring
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(o.x, o.y, ORB_R + 6, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2);
+            ctx.stroke();
+        }
+
+        // NPCs (ally icons)
+        const allyIcons = [icons.ally1, icons.ally2, icons.ally3];
+        for (let i = 0; i < npcs.length; i++) {
+            const n = npcs[i];
+            if (!n.alive) continue;
+            drawIcon(allyIcons[i], n.x, n.y, NPC_R, '#38bdf8');
+        }
+
+        // Boss
+        drawIcon(icons.boss, boss.x, boss.y, BOSS_R, boss.casting ? '#fbbf24' : boss.color);
+        if (boss.casting) {
+            ctx.strokeStyle = '#fde68a';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(boss.x, boss.y, BOSS_R + 2, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        const barW = 50, barH = 6;
+        ctx.fillStyle = '#333';
+        ctx.fillRect(boss.x - barW / 2, boss.y + BOSS_R + 6, barW, barH);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(boss.x - barW / 2, boss.y + BOSS_R + 6, barW * (boss.hp / 100), barH);
+        if (boss.casting) {
+            const rem = getBossCastRemaining();
+            const p = 1 - rem / 5;
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(boss.x, boss.y, BOSS_R + 12, -Math.PI / 2, -Math.PI / 2 + p * Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Tormented Visions', boss.x, boss.y - BOSS_R - 18);
+        }
+
+        // Player (tank icon)
+        if (!player.dead) {
+            drawIcon(icons.tank, player.x, player.y, PLAYER_R, hasTrueSight() ? '#a78bfa' : '#60a5fa');
+            if (hasTrueSight()) {
+                ctx.strokeStyle = 'rgba(167,139,250,0.55)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, PLAYER_R + 8, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        } else {
+            drawIcon(icons.tank, player.x, player.y, PLAYER_R, '#444');
+        }
+
+        if (tiredEyesStacks > 0) {
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('👁 ' + tiredEyesStacks, player.x, player.y - PLAYER_R - 12);
+        }
     }
-  }
 
-  // Eradication telegraph / statues
-  if (eradState === 'telegraph') {
-    for (const s of eradStatues) {
-      ctx.fillStyle = '#b45309';
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, 14, 0, Math.PI * 2);
-      ctx.fill();
-      // cast progress ring
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, 22, -Math.PI/2, -Math.PI/2 + eradCastProgress * Math.PI * 2);
-      ctx.stroke();
+    function drawPortalPad(p) {
+        const pcd = getPortalCD();
+        const ready = pcd <= 0;
+        ctx.fillStyle = ready ? 'rgba(34,211,238,0.25)' : 'rgba(34,211,238,0.08)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = ready ? '#22d3ee' : '#22d3ee55';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 28, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = ready ? '#22d3ee' : '#558888';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(ready ? 'PORTAL' : pcd.toFixed(0) + 's', p.x, p.y + 4);
     }
-    // live tracking beams (telegraph)
-    for (let i = 0; i < eradBeams.length; i++) {
-      const b = eradBeams[i];
-      const isOwn = i === 0;
-      ctx.strokeStyle = isOwn ? 'rgba(74,222,128,0.55)' : 'rgba(239,68,68,0.55)';
-      ctx.lineWidth = isOwn ? 7 : 9;
-      ctx.setLineDash([12, 8]);
-      ctx.beginPath();
-      ctx.moveTo(b.fromX, b.fromY);
-      ctx.lineTo(b.toX, b.toY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      // bright core
-      ctx.strokeStyle = isOwn ? '#4ade80' : '#ef4444';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(b.fromX, b.fromY);
-      ctx.lineTo(b.toX, b.toY);
-      ctx.stroke();
+
+    // ─── HUD ───────────────────────────────────────────────────────
+    function updateHUD() {
+        document.getElementById('hudTime').textContent = gameTime.toFixed(1) + ' s';
+        const tsRem = getTrueSightRemaining();
+        const tiredRem = getTiredEyesRemaining();
+        if (tsRem > 0) {
+            document.getElementById('hudTS').textContent = tsRem.toFixed(1) + ' s';
+            document.getElementById('hudTS').className = 'hud-value green';
+        } else {
+            document.getElementById('hudTS').textContent = 'none';
+            document.getElementById('hudTS').className = 'hud-value red';
+        }
+        document.getElementById('hudTired').textContent = tiredEyesStacks +
+            (tiredRem > 0 ? ` (${tiredRem.toFixed(0)}s)` : '');
+        document.getElementById('hudHP').textContent = boss.hp.toFixed(1) + '%';
+
+        if (boss.casting) {
+            document.getElementById('hudTV').textContent = 'CAST ' + getBossCastRemaining().toFixed(1) + 's';
+        } else if (gameTime >= boss.nextCastAt && !hasTrueSight()) {
+            document.getElementById('hudTV').textContent = 'waiting for True Sight';
+        } else {
+            document.getElementById('hudTV').textContent = Math.max(0, boss.nextCastAt - gameTime).toFixed(1) + ' s';
+        }
+
+        let waveInfo = '';
+        if (waveState === 'waiting') waveInfo = 'wave in ' + waveTimer.toFixed(1) + 's';
+        else if (waveState === 'delay') waveInfo = 'delay ' + waveTimer.toFixed(1) + 's';
+        else if (waveState === 'moving') waveInfo = 'WAVE ' + (waveProgress * 100).toFixed(0) + '%';
+        else if (waveState === 'pause') waveInfo = 'pause ' + waveTimer.toFixed(1) + 's';
+        else waveInfo = '—';
+
+        let eradInfo = '';
+        if (eradState === 'waiting') eradInfo = 'Erad ' + eradTimer.toFixed(1) + 's';
+        else eradInfo = 'TELEGRAPH ' + eradTimer.toFixed(1) + 's';
+
+        document.getElementById('hudWave').textContent = waveInfo + ' | ' + eradInfo;
+
+        const pcd = getPortalCD();
+        if (pcd > 0) {
+            document.getElementById('hudPortal').textContent = pcd.toFixed(1) + ' s';
+            document.getElementById('hudPortal').className = 'hud-value red';
+        } else {
+            document.getElementById('hudPortal').textContent = 'ready';
+            document.getElementById('hudPortal').className = 'hud-value green';
+        }
+
+        document.getElementById('hudWaves').textContent = wavesCompleted;
     }
-    // warning text
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('ERADICATION — leave foreign beams! ' + eradTimer.toFixed(1) + 's', W/2, 55);
-  }
 
-  // orbs with life bar
-  for (const o of orbs) {
-    const frac = o.life / o.maxLife;
-    ctx.fillStyle = `rgba(251,191,36,${0.35 + frac * 0.65})`;
-    ctx.beginPath();
-    ctx.arc(o.x, o.y, ORB_R, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#fde68a';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    // life ring
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(o.x, o.y, ORB_R + 6, -Math.PI/2, -Math.PI/2 + frac * Math.PI * 2);
-    ctx.stroke();
-  }
+    // ─── Main loop ─────────────────────────────────────────────────
+    function loop(now) {
+        requestAnimationFrame(loop);
+        if (!running) {
+            draw();
+            return;
+        }
+        const rawDt = Math.min((now - lastFrame) / 1000, 0.05);
+        lastFrame = now;
+        const dt = rawDt * gameSpeedMult;
+        gameTime += dt;
 
-  // NPCs (ally icons)
-  const allyIcons = [icons.ally1, icons.ally2, icons.ally3];
-  for (let i = 0; i < npcs.length; i++) {
-    const n = npcs[i];
-    if (!n.alive) continue;
-    drawIcon(allyIcons[i], n.x, n.y, NPC_R, '#38bdf8');
-  }
+        updatePlayer(dt);
+        updateBoss(dt);
+        updateTrueSight(dt);
+        updateWave(dt);
+        updateOrbs(dt);
+        updateTV(dt);
+        updateErad(dt);
 
-  // Boss
-  drawIcon(icons.boss, boss.x, boss.y, BOSS_R, boss.casting ? '#fbbf24' : boss.color);
-  if (boss.casting) {
-    ctx.strokeStyle = '#fde68a';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(boss.x, boss.y, BOSS_R + 2, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-  const barW = 50, barH = 6;
-  ctx.fillStyle = '#333';
-  ctx.fillRect(boss.x - barW/2, boss.y + BOSS_R + 6, barW, barH);
-  ctx.fillStyle = '#ef4444';
-  ctx.fillRect(boss.x - barW/2, boss.y + BOSS_R + 6, barW * (boss.hp / 100), barH);
-  if (boss.casting) {
-    const rem = getBossCastRemaining();
-    const p = 1 - rem / 5;
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.arc(boss.x, boss.y, BOSS_R + 12, -Math.PI/2, -Math.PI/2 + p * Math.PI * 2);
-    ctx.stroke();
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = '11px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Tormented Visions', boss.x, boss.y - BOSS_R - 18);
-  }
-
-  // Player (tank icon)
-  if (!player.dead) {
-    drawIcon(icons.tank, player.x, player.y, PLAYER_R, hasTrueSight() ? '#a78bfa' : '#60a5fa');
-    if (hasTrueSight()) {
-      ctx.strokeStyle = 'rgba(167,139,250,0.55)';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, PLAYER_R + 8, 0, Math.PI * 2);
-      ctx.stroke();
+        draw();
+        updateHUD();
     }
-  } else {
-    drawIcon(icons.tank, player.x, player.y, PLAYER_R, '#444');
-  }
 
-  if (tiredEyesStacks > 0) {
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 13px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('👁 ' + tiredEyesStacks, player.x, player.y - PLAYER_R - 12);
-  }
-}
+    document.getElementById('tankSpeed').addEventListener('input', e => {
+        tankSpeedVal = parseFloat(e.target.value);
+        document.getElementById('valTankSpeed').textContent = tankSpeedVal;
+    });
+    document.getElementById('bossSpeed').addEventListener('input', e => {
+        bossSpeedVal = parseFloat(e.target.value);
+        document.getElementById('valBossSpeed').textContent = bossSpeedVal;
+    });
+    document.getElementById('orbSpeed').addEventListener('input', e => {
+        orbSpeedVal = parseFloat(e.target.value);
+        document.getElementById('valOrbSpeed').textContent = orbSpeedVal;
+    });
+    document.getElementById('gameSpeed').addEventListener('input', e => {
+        gameSpeedMult = parseFloat(e.target.value);
+        document.getElementById('valGameSpeed').textContent = gameSpeedMult.toFixed(1) + 'x';
+    });
+    document.getElementById('startBtn').addEventListener('click', resetGame);
+    document.getElementById('restartBtn').addEventListener('click', resetGame);
 
-function drawPortalPad(p) {
-  const pcd = getPortalCD();
-  const ready = pcd <= 0;
-  ctx.fillStyle = ready ? 'rgba(34,211,238,0.25)' : 'rgba(34,211,238,0.08)';
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, 28, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = ready ? '#22d3ee' : '#22d3ee55';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, 28, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.fillStyle = ready ? '#22d3ee' : '#558888';
-  ctx.font = '10px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(ready ? 'PORTAL' : pcd.toFixed(0) + 's', p.x, p.y + 4);
-}
-
-// ─── HUD ───────────────────────────────────────────────────────
-function updateHUD() {
-  document.getElementById('hudTime').textContent = gameTime.toFixed(1) + ' s';
-  const tsRem = getTrueSightRemaining();
-  const tiredRem = getTiredEyesRemaining();
-  if (tsRem > 0) {
-    document.getElementById('hudTS').textContent = tsRem.toFixed(1) + ' s';
-    document.getElementById('hudTS').className = 'hud-value green';
-  } else {
-    document.getElementById('hudTS').textContent = 'none';
-    document.getElementById('hudTS').className = 'hud-value red';
-  }
-  document.getElementById('hudTired').textContent = tiredEyesStacks +
-    (tiredRem > 0 ? ` (${tiredRem.toFixed(0)}s)` : '');
-  document.getElementById('hudHP').textContent = boss.hp.toFixed(1) + '%';
-
-  if (boss.casting) {
-    document.getElementById('hudTV').textContent = 'CAST ' + getBossCastRemaining().toFixed(1) + 's';
-  } else if (gameTime >= boss.nextCastAt && !hasTrueSight()) {
-    document.getElementById('hudTV').textContent = 'waiting for True Sight';
-  } else {
-    document.getElementById('hudTV').textContent = Math.max(0, boss.nextCastAt - gameTime).toFixed(1) + ' s';
-  }
-
-  let waveInfo = '';
-  if (waveState === 'waiting') waveInfo = 'wave in ' + waveTimer.toFixed(1) + 's';
-  else if (waveState === 'delay') waveInfo = 'delay ' + waveTimer.toFixed(1) + 's';
-  else if (waveState === 'moving') waveInfo = 'WAVE ' + (waveProgress * 100).toFixed(0) + '%';
-  else if (waveState === 'pause') waveInfo = 'pause ' + waveTimer.toFixed(1) + 's';
-  else waveInfo = '—';
-
-  let eradInfo = '';
-  if (eradState === 'waiting') eradInfo = 'Erad ' + eradTimer.toFixed(1) + 's';
-  else eradInfo = 'TELEGRAPH ' + eradTimer.toFixed(1) + 's';
-
-  document.getElementById('hudWave').textContent = waveInfo + ' | ' + eradInfo;
-
-  const pcd = getPortalCD();
-  if (pcd > 0) {
-    document.getElementById('hudPortal').textContent = pcd.toFixed(1) + ' s';
-    document.getElementById('hudPortal').className = 'hud-value red';
-  } else {
-    document.getElementById('hudPortal').textContent = 'ready';
-    document.getElementById('hudPortal').className = 'hud-value green';
-  }
-
-  document.getElementById('hudWaves').textContent = wavesCompleted;
-}
-
-// ─── Main loop ─────────────────────────────────────────────────
-function loop(now) {
-  requestAnimationFrame(loop);
-  if (!running) { draw(); return; }
-  const rawDt = Math.min((now - lastFrame) / 1000, 0.05);
-  lastFrame = now;
-  const dt = rawDt * gameSpeedMult;
-  gameTime += dt;
-
-  updatePlayer(dt);
-  updateBoss(dt);
-  updateTrueSight(dt);
-  updateWave(dt);
-  updateOrbs(dt);
-  updateTV(dt);
-  updateErad(dt);
-
-  draw();
-  updateHUD();
-}
-
-document.getElementById('tankSpeed').addEventListener('input', e => {
-  tankSpeedVal = parseFloat(e.target.value);
-  document.getElementById('valTankSpeed').textContent = tankSpeedVal;
-});
-document.getElementById('bossSpeed').addEventListener('input', e => {
-  bossSpeedVal = parseFloat(e.target.value);
-  document.getElementById('valBossSpeed').textContent = bossSpeedVal;
-});
-document.getElementById('orbSpeed').addEventListener('input', e => {
-  orbSpeedVal = parseFloat(e.target.value);
-  document.getElementById('valOrbSpeed').textContent = orbSpeedVal;
-});
-document.getElementById('gameSpeed').addEventListener('input', e => {
-  gameSpeedMult = parseFloat(e.target.value);
-  document.getElementById('valGameSpeed').textContent = gameSpeedMult.toFixed(1) + 'x';
-});
-document.getElementById('startBtn').addEventListener('click', resetGame);
-document.getElementById('restartBtn').addEventListener('click', resetGame);
-
-draw();
-updateHUD();
-requestAnimationFrame(loop);
+    draw();
+    updateHUD();
+    requestAnimationFrame(loop);
 </script>
 </body>
 </html>
