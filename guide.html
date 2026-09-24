@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vel'korath Guide — Xul Trainer</title>
+<style>
+  :root {
+    --bg: #09090f;
+    --surface: #12121c;
+    --surface2: #1a1a28;
+    --border: #2a2a3d;
+    --text: #ece8f5;
+    --muted: #9b96ad;
+    --purple: #a78bfa;
+    --purple-dim: rgba(167, 139, 250, 0.15);
+    --cyan: #22d3ee;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(124, 58, 237, 0.25), transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34, 211, 238, 0.08), transparent 50%),
+      radial-gradient(800px 400px at 50% 100%, rgba(239, 68, 68, 0.06), transparent 50%),
+      var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  .page { max-width: 1080px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  .header {
+    display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; margin-bottom: 28px;
+  }
+  .home {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.8rem; font-weight: 600; color: var(--purple); text-decoration: none;
+    border: 1px solid rgba(167, 139, 250, 0.35); background: var(--purple-dim);
+    border-radius: 999px; padding: 6px 14px;
+  }
+  .home:hover { background: rgba(167, 139, 250, 0.28); border-color: var(--purple); }
+  .header-text { flex: 1; min-width: 220px; }
+  .eyebrow {
+    font-size: 0.72rem; letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--purple); margin: 14px 0 6px;
+  }
+  h1 {
+    font-size: clamp(1.6rem, 4vw, 2.15rem); font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.15;
+    background: linear-gradient(120deg, #f3e8ff 0%, #c4b5fd 40%, #67e8f9 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .header-sub { margin-top: 8px; color: var(--muted); font-size: 0.95rem; max-width: 540px; }
+  .header-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+  .quick-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .quick-links a {
+    font-size: 0.78rem; color: var(--cyan); text-decoration: none;
+    border: 1px solid rgba(34, 211, 238, 0.25); padding: 5px 10px; border-radius: 8px;
+    background: rgba(34, 211, 238, 0.06);
+  }
+  .quick-links a:hover { background: rgba(34, 211, 238, 0.14); }
+
+  .intro {
+    background: linear-gradient(145deg, rgba(26, 26, 40, 0.95), rgba(18, 18, 28, 0.98));
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 22px; margin-bottom: 28px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    color: var(--muted); font-size: 0.92rem;
+  }
+  .intro strong { color: var(--text); }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
+  .badge-row .hint { color: var(--muted); font-size: 0.82rem; margin-right: 6px; }
+
+  .badge {
+    display: inline-flex; align-items: center; font-size: 0.65rem; font-weight: 800;
+    letter-spacing: 0.7px; text-transform: uppercase; padding: 3px 8px; border-radius: 6px;
+  }
+  .b-all { color: #86efac; background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.35); }
+  .b-hard { color: #fde68a; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.4); }
+  .b-nm { color: #fca5a5; background: rgba(239,68,68,0.14); border: 1px solid rgba(239,68,68,0.4); }
+  .b-phase { color: #e9d5ff; background: rgba(168,85,247,0.14); border: 1px solid rgba(168,85,247,0.4); }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  .toc a {
+    font-size: 0.75rem; color: var(--muted); text-decoration: none;
+    padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .toc a:hover { color: var(--text); border-color: var(--purple); background: var(--purple-dim); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    margin-bottom: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
+  .card:hover { border-color: rgba(167,139,250,0.45); box-shadow: 0 14px 40px rgba(124,58,237,0.12); }
+  .card-top {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(90deg, rgba(124,58,237,0.12), transparent 60%);
+  }
+  .card-num {
+    width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center;
+    font-size: 0.8rem; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, #7c3aed, #4c1d95); flex-shrink: 0;
+  }
+  .card-title { font-size: 1.15rem; font-weight: 700; }
+  .card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .card-role {
+    margin-left: auto; font-size: 0.78rem; color: var(--muted);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .card-grid { display: grid; grid-template-columns: 1.35fr 1fr; }
+  @media (max-width: 840px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .header-actions { align-items: flex-start; }
+    .quick-links { justify-content: flex-start; }
+  }
+  .card-content { padding: 18px 20px 20px; }
+  .card-content p { color: #c8c3d8; font-size: 0.92rem; margin-bottom: 12px; }
+  .card-content ul { margin: 0 0 14px 1.15rem; color: #b0a9c4; font-size: 0.88rem; }
+  .card-content li { margin-bottom: 6px; }
+  .card-content li strong { color: #e8e0ff; }
+  .callouts {
+    list-style: none; margin: 0 0 14px; padding: 0;
+    display: grid; gap: 8px;
+  }
+  .callouts li {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; font-size: 0.86rem; color: #c8c3d8;
+  }
+  .callouts .call {
+    display: inline-block; font-weight: 800; color: #f3e8ff;
+    background: rgba(124,58,237,0.25); border: 1px solid rgba(167,139,250,0.35);
+    border-radius: 6px; padding: 1px 8px; margin-right: 6px; font-size: 0.78rem;
+  }
+  .meta-box { display: grid; gap: 10px; }
+  .meta-item {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 12px;
+  }
+  .meta-item .label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--purple); margin-bottom: 4px;
+  }
+  .meta-item .value { font-size: 0.85rem; color: #d4cfe3; }
+  .tips-box {
+    border-left: 3px solid var(--cyan);
+    background: rgba(34,211,238,0.06); border-radius: 0 12px 12px 0;
+  }
+  .tips-box .label { color: var(--cyan); }
+
+  .card-media {
+    padding: 16px; background: #0c0c14; border-left: 1px solid var(--border);
+    display: flex; align-items: center;
+  }
+  @media (max-width: 840px) {
+    .card-media { border-left: none; border-top: 1px solid var(--border); }
+  }
+  .media-frame {
+    width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(34,211,238,0.08)), #0a0a10;
+    border: 1px solid var(--border); display: grid; place-items: center;
+  }
+  .media-frame video, .media-frame iframe {
+    width: 100%; height: 100%; object-fit: cover; border: 0; display: block;
+    pointer-events: none;
+  }
+  .media-empty { color: #4a465c; font-size: 0.8rem; }
+
+  .section-title {
+    font-size: 1.35rem; font-weight: 700; margin: 40px 0 16px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(120deg, #f3e8ff, #67e8f9);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .section-lead { color: var(--muted); font-size: 0.9rem; margin: -8px 0 22px; max-width: 640px; }
+  footer { margin-top: 36px; text-align: center; color: #5c5670; font-size: 0.78rem; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="header-text">
+        <a class="home" href="index.html">← Home</a>
+        <div class="eyebrow">Xul · The Blood Monolith</div>
+        <h1>Vel'korath Ability Guide</h1>
+        <p class="header-sub">Nightmare-focused breakdown of the final boss — ordered by typical first appearance in the fight.</p>
+      </div>
+      <div class="header-actions">
+        <div class="quick-links">
+          <a href="xul_dungeon.html">Minigame →</a>
+          <a href="planner.html">Planner →</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="intro">
+      Cards follow <strong>first appearance order</strong>, not HP phases.
+      Difficulty badges mark when a mechanic — or a sub-effect — is added.
+      <div class="badge-row">
+        <span class="badge b-all">ALL</span><span class="hint">from Normal</span>
+        <span class="badge b-hard">HARD+</span><span class="hint">Hard and above</span>
+        <span class="badge b-nm">NIGHTMARE</span><span class="hint">Nightmare only</span>
+        <span class="badge b-phase">PHASE</span><span class="hint">HP / intermission</span>
+      </div>
+    </section>
+
+    <nav class="toc">
+      <a href="#marching">Marching Vessels</a>
+      <a href="#truesight">True Sight</a>
+      <a href="#orbs">Blood Orbs</a>
+      <a href="#pool">Hungering Vessels</a>
+      <a href="#tv">Tormenting Visions</a>
+      <a href="#erad">Eradication</a>
+      <a href="#contrite">Contrite</a>
+      <a href="#maze">One True Path</a>
+      <a href="#repent">Repent</a>
+      <a href="#sermon">Blood Sermon</a>
+      <a href="#apotheosis">Apotheosis</a>
+      <a href="#tips">Tips</a>
+    </nav>
+
+    <article class="card" id="marching">
+      <div class="card-top">
+        <div class="card-num">1</div>
+        <div class="card-title">Marching Vessels</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span></div>
+        <div class="card-role">Tank</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>A line of seven Blood Creations spawns on one side of the arena and sends waves across the platform. Real waves are lethal or apply a heavy DoT. With <strong>True Sight</strong>, safe illusion lanes become visible.</p>
+          <p>Whoever has True Sight should <strong>call the pattern on voice</strong>. Common calls (lanes numbered 1–7 from left to right when facing the wave):</p>
+          <ul class="callouts">
+            <li><span class="call">RIGHT</span> Safe lanes on the right side (lanes 6–7).</li>
+            <li><span class="call">LEFT</span> Safe lanes on the left side (lanes 1–2).</li>
+            <li><span class="call">MIDDLE</span> Safe center lanes (lanes 3–4–5).</li>
+            <li><span class="call">OUTSIDE</span> / <span class="call">ONE</span> Safe odd lanes <strong>1–3–5–7</strong>.</li>
+            <li><span class="call">INSIDE</span> / <span class="call">TWO</span> Safe even lanes <strong>2–4–6</strong>.</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">First wave <strong>spawns</strong> at 6s · every 15s after that</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">You can skip waves with a portal or certain mobility abilities (for example Xavian's Decree of the Sun and Sky Crash).</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="marching"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="truesight">
+      <div class="card-top">
+        <div class="card-num">2</div>
+        <div class="card-title">Truesight Corruption</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span></div>
+        <div class="card-role">Tank</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>Click a corner Blood Altar for <strong>20s Truesight Corruption</strong>. You see safe lanes. A dark circle lets allies dip in for short True Sight (5s) — the circle ticks damage, so the tank usually holds the buff.</p>
+          <ul>
+            <li><span class="badge b-hard">HARD+</span> <strong>Tired Eyes</strong> — stacks every ~2s while Corruption is up (+1% damage taken per stack); ~15s residual after it falls.</li>
+            <li>Cannot refresh while active. Lost after One True Path — take True Sight from an altar again after the maze.</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">On demand · duration exactly 20s</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">If Tired Eyes gets too high, skip a wave set without Truesight Corruption (portal the wave, or let a non-tank take the altar once).</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="truesight"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="orbs">
+      <div class="card-top">
+        <div class="card-num">3</div>
+        <div class="card-title">Blood Orbs</div>
+        <div class="card-badges"><span class="badge b-nm">NIGHTMARE</span></div>
+        <div class="card-role">DPS · Tank kite</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>An orb spawns from the <strong>last altar</strong> used for True Sight and crawls toward the boss. Contact heals the boss (~5% HP). Orbs can be slowed, CCed, and damaged; <strong>35%</strong> of damage dealt to the orb transfers to the boss.</p>
+          <ul>
+            <li>Orbs <strong>persist into One True Path</strong> and keep moving while you cannot freely attack.</li>
+            <li>You can control where the pre-maze orb spawns by choosing which altar was used last — see <a href="#tip-orb-maze" style="color:#22d3ee;">T2</a>.</li>
+            <li>During the final burn phase, orbs spawn from <strong>random</strong> locations — not from the last altar.</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">First 15s · every 27s</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">Remember (or mark) the last altar you used so you know where the next orb will come from. If an orb blocks your path, stun it and walk the boss past — he will not soak a stunned orb.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="orbs"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="pool">
+      <div class="card-top">
+        <div class="card-num">4</div>
+        <div class="card-title">Hungering Vessels</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span></div>
+        <div class="card-role">Kick / CC</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>Two vessels spawn and channel <strong>Gorging Pool</strong> (~12s): party-wide ticks (~2s) and a large slow zone. Interrupt or stun immediately — long channels wipe.</p>
+          <ul>
+            <li>Two spawns per cycle, ~1.5s apart.</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">First ~20s · every ~40s</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">Pre-assign a kick / CC rotation so both vessels die quickly.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="pool"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="tv">
+      <div class="card-top">
+        <div class="card-num">5</div>
+        <div class="card-title">Tormenting Visions</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span></div>
+        <div class="card-role">Tank</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>5s channel that pulses heavy damage around the tank. Melee stacked on the tank can die instantly.</p>
+          <ul>
+            <li>The cast requires True Sight on the tank. You can <strong>interrupt</strong> the cast by letting True Sight drop mid-channel; leftover cast time is added to the cooldown. See <a href="#tip-tv-clip" style="color:#22d3ee;">T1</a>.</li>
+            <li>If you hold True Sight for a long time (or skip it), the boss <strong>waits</strong> and will only start Tormenting Visions once TS is up again.</li>
+            <li><span class="badge b-nm">NIGHTMARE</span> Keep the boss away from Blood Orbs and from corners where the next orb will spawn. During the 5s channel the boss stands still and can easily soak an orb. If your Tormenting Visions timer is desynced, be careful the next time you take True Sight from an altar: the cast can start immediately and root him on top of an orb.</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">First at 25s · 25s cooldown from cast start (5s channel + remaining CD)</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">Clear melee before the pulse window.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="tv"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="erad">
+      <div class="card-top">
+        <div class="card-num">6</div>
+        <div class="card-title">Eradication</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span></div>
+        <div class="card-role">Defensive · Kick / CC</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p><strong>Sinister Vessels</strong> on four sides each aim a beam at one player. Beam cast is exactly <strong>5s</strong>. Your own beam is survivable; another player's beam is lethal. Spread lines. Vessels can be <strong>kicked or CCed</strong> to stop the cast early.</p>
+          <ul>
+            <li><span class="badge b-hard">HARD+</span> <strong>Lingering Eradication</strong> — your own beam applies an 8s magic DoT (dispellable).</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">First at 26s · every 25s · beam cast 5s</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">During telegraph, beams track — leave foreign lines before the snap. DPS who struggle to live their own beam can run 10 green gems so their defensive is available for every Eradication cast.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="erad"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="contrite">
+      <div class="card-top">
+        <div class="card-num">7</div>
+        <div class="card-title">Contrite</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span></div>
+        <div class="card-role">Tank</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>Tank slam applying <strong>Contrite Weakness</strong> (~6s): later hits deal stacking +20% damage. Respect stacks before eating your Eradication beam.</p>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">Recurring tank slam</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">Avoid overlapping high stacks with Eradication / Tormenting Visions without a defensive.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="contrite"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="maze">
+      <div class="card-top">
+        <div class="card-num">8</div>
+        <div class="card-title">One True Path</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span><span class="badge b-phase">PHASE</span></div>
+        <div class="card-role">Tank</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>At <strong>70%</strong> and <strong>50%</strong> HP, regular mechanics cancel. Each player gets a unique path (30s) with temporary True Sight. Touching another player outside safe zones is lethal. Abilities unlock in the golden dome.</p>
+          <p>The transition can be delayed if the boss is channeling <strong>Tormenting Visions</strong> at the HP threshold.</p>
+          <ul>
+            <li>Waves still cross the maze — yield and wait.</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">Boss HP 70% and 50% (may delay if Tormenting Visions is channeling)</div>
+            </div>
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">
+                <ol style="margin:6px 0 0 1.1rem;padding:0;color:#d4cfe3;">
+                  <li>Agree the exit order from the start bubble before the phase.</li>
+                  <li>Bloodrite Drums speed up the maze: use them just before the phase, or inside the dome after ~2s. Pressing them the instant the phase starts puts them on CD with no effect.</li>
+                  <li>You can use a portal if you still reach the start portal and the exit portal sits on your path.</li>
+                  <li>A maze bug can wipe the group — it is controllable. See <a href="#tip-maze-bug" style="color:#22d3ee;">T3</a>.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="maze"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="repent">
+      <div class="card-top">
+        <div class="card-num">9</div>
+        <div class="card-title">Repent</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span><span class="badge b-phase">PHASE</span></div>
+        <div class="card-role">Dispel</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>If the maze is failed, the party gets a heavy magic DoT (~20s). <strong>Mass Dispel</strong> is the emergency plan — prevention is better.</p>
+          <p>While Repent is up you <strong>cannot take True Sight</strong>. The only reliable way through Marching Vessels is a portal.</p>
+          <div class="meta-box">
+            <div class="meta-item">
+              <div class="label">Timing</div>
+              <div class="value">On failed One True Path</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="repent"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="sermon">
+      <div class="card-top">
+        <div class="card-num">10</div>
+        <div class="card-title">Blood Sermon</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span><span class="badge b-phase">PHASE</span></div>
+        <div class="card-role">Tank</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>At <strong>25%</strong> HP, three runes appear (Cross / Sword / Eye). True Sight shows the correct one. Place the required number of players before the cast ends to grant party True Sight for burn.</p>
+          <p>The transition can be delayed if the boss is channeling <strong>Tormenting Visions</strong> when he hits 25%.</p>
+          <ul>
+            <li><strong>Cross</strong> — all four · <strong>Sword</strong> — exactly one · <strong>Eye</strong> — one with Truesight Corruption</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">Plan your True Sight window ahead of 25%. If Blood Sermon starts while your TS is about to expire, ask a teammate to take the altar so someone can still call the correct rune.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="sermon"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="apotheosis">
+      <div class="card-top">
+        <div class="card-num">11</div>
+        <div class="card-title">Apotheosis</div>
+        <div class="card-badges"><span class="badge b-all">ALL</span><span class="badge b-phase">PHASE</span></div>
+        <div class="card-role">Party</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>Throughout the final phase, random ground explosions fill the arena. Dodge cracks/puddles while still handling waves, pools, eradication, and (on Nightmare) orbs.</p>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="apotheosis"></div></div>
+      </div>
+    </article>
+
+
+    <h2 class="section-title" id="tips">Tips</h2>
+
+    <article class="card" id="tip-tv-clip">
+      <div class="card-top">
+        <div class="card-num">T1</div>
+        <div class="card-title">Interrupt Tormenting Visions with True Sight</div>
+        <div class="card-role">Tank</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>Tormenting Visions only channels meaningfully while you have True Sight. If you pick up the altar so that True Sight has about <strong>1 second left when the Tormenting Visions cast starts</strong>, the channel is interrupted after that second instead of running the full 5s.</p>
+          <p>A practical rule: take True Sight <strong>19 seconds before</strong> the next Tormenting Visions window. TS lasts 20s, so it drops almost immediately after Tormenting Visions begins — the cast is interrupted early.</p>
+          <ul>
+            <li>Less pulse damage on you and anyone near the boss.</li>
+            <li>More free movement time to kite the boss away from Blood Orbs.</li>
+          </ul>
+          <div class="meta-box">
+            <div class="meta-item tips-box">
+              <div class="label">Tips</div>
+              <div class="value">If you use a portal, your TS timer will desync.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="tip-tv-clip"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="tip-orb-maze">
+      <div class="card-top">
+        <div class="card-num">T2</div>
+        <div class="card-title">Control orb spawns into the maze</div>
+        <div class="card-role">Tank · Nightmare</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>During One True Path the boss stays parked in the <strong>same corner he started the fight in</strong>. Blood Orbs always spawn from the <strong>last altar</strong> someone used for True Sight and then walk toward him.</p>
+          <p>If the last altar before the maze is the one <strong>farthest from the boss corner</strong>, a late orb has a long path. Spawn it just before the intermission and the boss often will not soak it while everyone is locked in the maze.</p>
+          <ul>
+            <li>At pull, mark the boss's starting corner so the whole group always knows which altar is "far".</li>
+            <li>Plan the last pre-maze True Sight from that far altar on purpose.</li>
+          </ul>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="tip-orb-maze"></div></div>
+      </div>
+    </article>
+
+    <article class="card" id="tip-maze-bug">
+      <div class="card-top">
+        <div class="card-num">T3</div>
+        <div class="card-title">Maze safe-zone timing bug</div>
+        <div class="card-role">Party</div>
+      </div>
+      <div class="card-grid">
+        <div class="card-content">
+          <p>There is a known One True Path bug: if the <strong>last player enters the safe dome while a new wave set is still spawning</strong> (statues appearing / wave not yet moving), the entire group can die.</p>
+          <p>You can play around it. When you are the last person approaching the dome, <strong>wait until the wave has actually started moving</strong>, then step in. Do not finish the maze on the spawn tick.</p>
+        </div>
+        <div class="card-media"><div class="media-frame" data-ability="tip-maze-bug"></div></div>
+      </div>
+    </article>
+
+
+    <footer>Vel'korath guide · Xul Trainer · Made by TipsyPenguin</footer>
+  </div>
+
+<script>
+/* ============================================================
+   VIDEO SOURCES — edit ONLY this block
+   ------------------------------------------------------------
+   For each ability set ONE of:
+     file: "videos/my-clip.mp4"   // file in the repo / Pages site
+     youtube: "dQw4w9WgXcQ"      // YouTube video id only
+     url: "https://..."          // direct mp4 link or similar
+   Leave empty until you have a clip.
+   ============================================================ */
+const VIDEO_SOURCES = {
+  marching:   { file: "videos/marching-vessels.mp4", youtube: "", url: "" },
+  truesight:  { file: "videos/truesight-corruption.mp4", youtube: "", url: "" },
+  orbs:       { file: "videos/blood-orbs.mp4", youtube: "", url: "" },
+  pool:       { file: "videos/hungering-vessels.mp4", youtube: "", url: "" },
+  tv:         { file: "videos/tormenting-visions.mp4", youtube: "", url: "" },
+  erad:       { file: "videos/eradication.mp4", youtube: "", url: "" },
+  contrite:   { file: "videos/contrite.mp4", youtube: "", url: "" },
+  maze:       { file: "videos/one-true-path.mp4", youtube: "", url: "" },
+  repent:     { file: "videos/repent.mp4", youtube: "", url: "" },
+  sermon:     { file: "videos/blood-sermon.mp4", youtube: "", url: "" },
+  apotheosis: { file: "videos/apotheosis.mp4", youtube: "", url: "" },
+  // Strategy tips
+  "tip-tv-clip":  { file: "videos/t1.mp4", youtube: "", url: "" },
+  "tip-orb-maze": { file: "videos/t2.mp4", youtube: "", url: "" },
+  "tip-maze-bug": { file: "videos/t3.mp4", youtube: "", url: "" }
+};
+
+(function mountVideos() {
+  document.querySelectorAll(".media-frame[data-ability]").forEach(frame => {
+    const key = frame.getAttribute("data-ability");
+    const src = VIDEO_SOURCES[key] || {};
+    frame.innerHTML = "";
+
+    if (src.youtube) {
+      const iframe = document.createElement("iframe");
+      iframe.src = "https://www.youtube.com/embed/" + src.youtube;
+      iframe.allowFullscreen = true;
+      iframe.loading = "lazy";
+      iframe.title = key;
+      frame.appendChild(iframe);
+      return;
+    }
+
+    const mediaUrl = src.file || src.url || "";
+    if (mediaUrl) {
+      // GIF-like: muted autoplay loop, no controls
+      const video = document.createElement("video");
+      video.src = mediaUrl;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.autoplay = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute("muted", "");
+      video.setAttribute("autoplay", "");
+      video.setAttribute("loop", "");
+      video.setAttribute("playsinline", "");
+      video.preload = "auto";
+      video.disablePictureInPicture = true;
+      video.controls = false;
+      video.addEventListener("error", () => {
+        frame.innerHTML = '<div class="media-empty"></div>';
+      });
+      // Some browsers need an explicit play() after insert
+      video.addEventListener("loadeddata", () => {
+        video.play().catch(() => {});
+      });
+      frame.appendChild(video);
+      return;
+    }
+
+    frame.innerHTML = '<div class="media-empty"></div>';
+  });
+})();
+</script>
+</body>
+</html>
